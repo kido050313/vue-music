@@ -2,33 +2,64 @@
   <div class="recommend">
     <div class="recommend-content">
       <div>
-        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
-          <slider>
-            <div v-for="item in recommends" :key="item.index">
-              <a :href="item.linkUrl">
-                <img :src="item.picUrl" alt="">
-              </a>
-            </div>
-          </slider>
+        <div class="wrapper">
+          <div v-if="recommends.length" class="slider-wrapper">
+            <swiper :options="swiperOption">
+              <!-- slides -->
+              <swiper-slide v-for="item of recommends" :key="item.id">
+                <a :href="item.linkUrl">
+                  <img class="swiper-img" :src="item.picUrl" />
+                </a>
+              </swiper-slide>
+              <!-- Optional controls -->
+              <div class="swiper-pagination"  slot="pagination"></div>
+            </swiper>
+          </div>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li class="item" v-for="item in discList" :key="item.index">
+              <div class="icon">
+                <img src="">
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.creator.name}}</h2>
+                <p class="desc">{{item.disname}}</p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
+
     </div>
+    <div></div>
   </div>
 </template>
 <script>
-import Slider from 'base/slider/slider'
-import {getRecommend} from 'api/recommend'
+// import Slider from 'base/slider/slider'
+
+import {getRecommend, getDiscList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
 import Scroll from 'base/scroll/scroll'
 export default {
   name: 'Recommend',
   components: {
-    Scroll,
-    Slider
+    Scroll
   },
   data () {
     return {
-      recommends: []
+      swiperOption: {
+        pagination: {
+          el: '.swiper-pagination'
+        },
+        loop: true,
+        autoplay: {
+          delay: 4000
+        }
+      },
+      recommends: [],
+      discList: []
     }
   },
   created () {
@@ -41,21 +72,40 @@ export default {
           this.recommends = res.data.slider
         }
       })
+    },
+    _getDiscList() {
+      getDiscList().then((res) => {
+        if (res.code === ERR_OK) {
+          this.discList = res.data.list
+        }
+      })
     }
   }
 }
 </script>
 <style lang="stylus" scoped>
-  .remcommend
-    position fixed
-    width 100%
-    top 88px
-    bottom 0
-    .remcommend-content
-      height 100%
-      overflow hidden
-  .slider-wrapper
+  @import "~common/stylus/variable"
+
+  .wrapper >>> .swiper-pagination-bullet
+    background rgba(255, 255, 255, 1) !important
+    opacity 1
+  .wrapper >>> .swiper-pagination-bullet-active
+    width 20px
+    border-radius 6px
+    background: rgba(249, 247, 249, .8) !important
+  .wrapper
+    overflow: hidden
     position relative
-    width 100%
-    overflow hidden
+    height: 0
+    padding-bottom: 40.1%
+    background: #eee
+    .swiper-img
+      width: 100%
+  .recommend-list
+    .list-title
+      height: 65px
+      line-height: 65px
+      text-align: center
+      font-size: $font-size-medium
+      color: $color-theme
 </style>
