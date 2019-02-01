@@ -3,7 +3,7 @@
     <div class="recommend-content">
       <div>
         <div class="wrapper">
-          <div v-if="recommends.length" class="slider-wrapper">
+          <div v-if="showSwiper" class="slider-wrapper">
             <swiper :options="swiperOption">
               <!-- slides -->
               <swiper-slide v-for="item of recommends" :key="item.id">
@@ -21,19 +21,17 @@
           <ul>
             <li class="item" v-for="item in discList" :key="item.index">
               <div class="icon">
-                <img src="">
+                <img width="60" height="60" :src="item.imgurl">
               </div>
               <div class="text">
-                <h2 class="name">{{item.creator.name}}</h2>
-                <p class="desc">{{item.disname}}</p>
+                <h2 class="name" v-html="item.creator.name"></h2>
+                <p class="desc" v-html="item.dissname"></p>
               </div>
             </li>
           </ul>
         </div>
       </div>
-
     </div>
-    <div></div>
   </div>
 </template>
 <script>
@@ -50,20 +48,23 @@ export default {
   data () {
     return {
       swiperOption: {
-        pagination: {
-          el: '.swiper-pagination'
-        },
+        pagination: '.swiper-pagination',
         loop: true,
-        autoplay: {
-          delay: 4000
-        }
+        autoplay: 4000,
+        autoplayDisableOnInteraction: false
       },
       recommends: [],
       discList: []
     }
   },
+  computed: {
+    showSwiper () {
+      return this.recommends.length
+    }
+  },
   created () {
     this._getRecommend()
+    this._getDiscList()
   },
   methods: {
     _getRecommend() {
@@ -97,7 +98,7 @@ export default {
     overflow: hidden
     position relative
     height: 0
-    padding-bottom: 40.1%
+    padding-bottom: 40%
     background: #eee
     .swiper-img
       width: 100%
@@ -108,4 +109,13 @@ export default {
       text-align: center
       font-size: $font-size-medium
       color: $color-theme
+    .item
+      display flex
+      box-sizing border-box
+      align-items center
+      padding 0 20px 20px 20px
+      .icon
+        flex 0 0 60px
+        width 60px
+        padding-right 20px
 </style>
