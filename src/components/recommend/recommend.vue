@@ -1,14 +1,14 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
+    <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
-        <div class="wrapper">
+        <div class="slider">
           <div v-if="showSwiper" class="slider-wrapper">
             <swiper :options="swiperOption">
               <!-- slides -->
               <swiper-slide v-for="item of recommends" :key="item.id">
                 <a :href="item.linkUrl">
-                  <img class="swiper-img" :src="item.picUrl" />
+                  <img class="needsclick swiper-img" :src="item.picUrl" @load="loadImage"/>
                 </a>
               </swiper-slide>
               <!-- Optional controls -->
@@ -21,7 +21,7 @@
           <ul>
             <li class="item" v-for="item in discList" :key="item.index">
               <div class="icon">
-                <img width="60" height="60" :src="item.imgurl">
+                <img width="60" height="60" v-lazy="item.imgurl">
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -31,7 +31,10 @@
           </ul>
         </div>
       </div>
-    </div>
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
+    </scroll>
   </div>
 </template>
 <script>
@@ -40,10 +43,12 @@
 import {getRecommend, getDiscList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
 import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 export default {
   name: 'Recommend',
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   data () {
     return {
@@ -80,6 +85,12 @@ export default {
           this.discList = res.data.list
         }
       })
+    },
+    loadImage() {
+      if (!this.checkLoaded) {
+        this.checkLoaded = true
+        this.$refs.scroll.refresh()
+      }
     }
   }
 }
@@ -87,14 +98,22 @@ export default {
 <style lang="stylus" scoped>
   @import "~common/stylus/variable"
 
-  .wrapper >>> .swiper-pagination-bullet
+  .recommend
+    position fixed
+    width 100%
+    top 88px
+    bottom 0
+    .recommend-content
+      height 100%
+      overflow hidden
+  .slider >>> .swiper-pagination-bullet
     background rgba(255, 255, 255, 1) !important
     opacity 1
-  .wrapper >>> .swiper-pagination-bullet-active
+  .slider >>> .swiper-pagination-bullet-active
     width 20px
     border-radius 6px
     background: rgba(249, 247, 249, .8) !important
-  .wrapper
+  .slider
     overflow: hidden
     position relative
     height: 0
@@ -118,4 +137,22 @@ export default {
         flex 0 0 60px
         width 60px
         padding-right 20px
+      .text
+        display flex
+        flex-direction column
+        justify-content center
+        flex 1
+        line-height 20px
+        overflow hidden
+        font-size $font-size-medium
+        .name
+          margin-bottom 10px
+          color $color-text
+        .desc
+          color $color-text-d
+  .loading-container
+    position absolute
+    width 100%
+    top 50%
+    transform translateY(-50%)
 </style>
