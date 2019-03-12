@@ -1,5 +1,8 @@
+import { getSongUrl } from 'api/song'
+import { ERR_OK } from 'api/config'
+
 export default class Song {
-  constructor({id, mid, singer, name, album, duration, image, url}) {
+  constructor({id, mid, singer, name, album, duration, image}) {
     this.id = id
     this.mid = mid
     this.singer = singer
@@ -7,7 +10,26 @@ export default class Song {
     this.album = album
     this.duration = duration
     this.image = image
-    this.url = url
+  }
+
+  getUrl() {
+    if (this.url) {
+      return Promise.resolve(this.url)
+    }
+
+    return new Promise((resolve, reject) => {
+      getSongUrl(this.mid).then(res => {
+        if (res.code === ERR_OK) {
+          this.url = `http://isure.stream.qqmusic.qq.com/${
+            res.req_0.data.midurlinfo[0].purl
+          }`
+          // console.log(res)
+          resolve(this.url)
+        } else {
+          reject(new Error('no url'))
+        }
+      })
+    })
   }
 }
 
@@ -19,13 +41,17 @@ export function createSong(musicData) {
     name: musicData.songname,
     album: musicData.albumname,
     duration: musicData.interval,
-    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
+    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`
+    // url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
+    // url: `http://dl.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?guid=263427534&vkey=${songVkey}&fromtag=66`
   })
 }
 
 function filterSinger(singer) {
   let ret = []
+  if (!singer) {
+    return ''
+  }
   singer.forEach((s) => {
     ret.push(s.name)
   })
