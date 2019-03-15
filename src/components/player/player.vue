@@ -42,7 +42,7 @@
               <i @click="prev" class="icon-prev"></i>
             </div>
             <div class="icon i-center" :class="disableCls">
-              <i @click="togglePlaying" :class="playIcon"></i>
+              <i @click="togglePlaying" class="icon-mini" :class="playIcon"></i>
             </div>
             <div class="icon i-right" :class="disableCls">
               <i @click="next" class="icon-next"></i>
@@ -64,6 +64,7 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
+          <progressCircle></progressCircle>
           <i @click.stop="togglePlaying" :class="miniIcon"></i>
         </div>
         <div class="control">
@@ -78,6 +79,7 @@
 </template>
 <script>
 import progressBar from 'base/progress-bar/progress-bar'
+import progressCircle from 'base/progress-circle/progress-circle'
 import {mapGetters, mapMutations} from 'vuex'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
@@ -87,7 +89,8 @@ const transform = prefixStyle('transform')
 export default {
   name: 'player',
   components: {
-    progressBar
+    progressBar,
+    progressCircle
   },
   data() {
     return {
