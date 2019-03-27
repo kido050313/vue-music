@@ -34,6 +34,18 @@ module.exports = {
         pathRewrite: {
           '^/api/getSongUrl': ''
         }
+      },
+      '/api/lyric': {
+        target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
+        bypass: function (req, res, proxyOptions) {
+          req.headers.referer = 'https://c.y.qq.com';
+          req.headers.host = 'c.y.qq.com'
+        },
+        secure: false, // 如果是htttps接口，需要配置这个参数
+        changeOrigin: true, // 允许跨域
+        pathRewrite: {
+          '^/api/lyric': ''
+        }
       }
     },
 
