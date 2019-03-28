@@ -11,13 +11,25 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/api/getSongList': {
+        target: 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+        bypass: function (req, res, proxyOptions) {
+          req.headers.referer = 'https://y.qq.com';
+          req.headers.host = 'c.y.qq.com';
+        },
+        secure: false, // 如果是https接口，需要配置这个参数
+        changeOrigin: true, // 允许跨域
+        pathRewrite: {
+          '^/api/getSongList': ''
+        }
+      },
       '/api/getDiscList': {
         target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
         bypass: function (req, res, proxyOptions) {
           req.headers.referer = 'https://c.y.qq.com';
           req.headers.host = 'c.y.qq.com';
         },
-        secure: false, // 如果是htttps接口，需要配置这个参数
+        secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           '^/api/getDiscList': ''
@@ -29,7 +41,7 @@ module.exports = {
           req.headers.referer = 'https://u.y.qq.com';
           req.headers.host = 'u.y.qq.com'
         },
-        secure: false, // 如果是htttps接口，需要配置这个参数
+        secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           '^/api/getSongUrl': ''
@@ -41,7 +53,7 @@ module.exports = {
           req.headers.referer = 'https://c.y.qq.com';
           req.headers.host = 'c.y.qq.com'
         },
-        secure: false, // 如果是htttps接口，需要配置这个参数
+        secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           '^/api/lyric': ''
