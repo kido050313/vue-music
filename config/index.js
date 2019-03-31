@@ -20,7 +20,7 @@ module.exports = {
         secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 允许跨域
         pathRewrite: {
-          '^/api/getSongList': ''
+          '^/api/getSongList': '/'
         }
       },
       '/api/getDiscList': {
@@ -57,6 +57,18 @@ module.exports = {
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           '^/api/lyric': ''
+        }
+      },
+      '/api/search': {
+        target: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+        bypass: function (req, res, proxyOptions) {
+          req.headers.referer = 'https://c.y.qq.com';
+          req.headers.host = 'c.y.qq.com'
+        },
+        secure: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/search': ''
         }
       }
     },

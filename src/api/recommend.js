@@ -46,7 +46,8 @@ export function getSongList(disstid) {
     utf8: 1,
     onlysong: 0,
     g_tk: 1474838257,
-    platform: 'yqq',
+    platform: 'yqq.json',
+    loginUin: 0,
     hostUin: 0,
     needNewCode: 0,
     format: 'json'
@@ -56,6 +57,7 @@ export function getSongList(disstid) {
     params: data
   })
     .then(res => {
+      console.log(res.headers)
       return Promise.resolve(res.data)
     })
 }
