@@ -3,7 +3,9 @@
           ref="suggest"
           :data="result"
           :pullup="pullup"
-          @scrollToEnd="searchMore">
+          @scrollToEnd="searchMore"
+          :beforeScroll="beforeScroll"
+          @beforeScroll="listScroll">
     <ul class="suggest-list">
       <li class="suggest-item"
           v-for="(item, index) in result"
@@ -53,7 +55,8 @@ export default {
       page: 1,
       result: [],
       pullup: true,
-      hasMore: true
+      hasMore: true,
+      beforeScroll: true
     }
   },
   methods: {
@@ -79,6 +82,9 @@ export default {
           this._checkMore(res.data)
         }
       })
+    },
+    listScroll() {
+      this.$emit('listScroll')
     },
     _checkMore(data) {
       const song = data.song
@@ -132,6 +138,7 @@ export default {
       } else {
         this.insertSong(item)
       }
+      this.$emit('select')
     },
     ...mapMutations({
       setSinger: 'SET_SINGER'
