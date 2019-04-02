@@ -8,22 +8,26 @@
         <div class="hot-key">
           <h1 class="title">热门搜索</h1>
           <ul>
-            <li @click="addQuery(item.k)" class="item" v-for="(item, index) in hotKey" :key="index">{{item.k}}</li>
+            <li @click="addQuery(item.k)"
+                class="item" v-for="(item, index) in hotKey"
+                :key="index">
+                <span>{{item.k}}</span>
+            </li>
           </ul>
         </div>
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear">
+            <span class="clear" @click="deleteAll">
               <i class="icon-clear"></i>
             </span>
           </h1>
-          <search-list :searches="searchHistory"></search-list>
+          <search-list :searches="searchHistory" @select="addQuery" @delete="deleteOne"></search-list>
         </div>
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest @listScroll="blurInput" @select="saveSearch" :query="query"></suggest>
+      <suggest @listScroll="blurInput"  @select="saveSearch" :query="query"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -51,10 +55,20 @@ export default {
   },
   created() {
     this._getHotKey()
+    console.log(this.searchHistory)
   },
   methods: {
     addQuery(query) {
       this.$refs.searchBox.setQuery(query)
+    },
+    saveSearch() {
+      this.saveSearchHistory(this.query)
+    },
+    deleteOne(item) {
+      this.deleteSearchHistory(item)
+    },
+    deleteAll() {
+      this.clearSearchHistory()
     },
     _getHotKey() {
       getHotKey().then((res) => {
@@ -74,7 +88,9 @@ export default {
       this.saveSearchHistory(this.query)
     },
     ...mapActions([
-      'saveSearchHistory'
+      'saveSearchHistory',
+      'deleteSearchHistory',
+      'clearSearchHistory'
     ])
   },
   components: {
