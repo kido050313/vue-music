@@ -82,15 +82,14 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_PLAYING_STATE, true)
 }
 
-export const saveSearchHistory = function({commit}, query) {
-  // 缓存到localstore中
+export const saveSearchHistory = function({ commit }, query) {
   commit(types.SET_SEARCH_HISTORY, saveSearch(query))
 }
 
-export const deleteSearchHistory = function ({commit}, query) {
+export const deleteSearchHistory = function({ commit }, query) {
   commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
 }
 
-export const clearSearchHistory = function ({commit}) {
+export const clearSearchHistory = function({ commit }) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
 }
