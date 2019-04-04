@@ -3,7 +3,7 @@
     <div class="search-box-wrapper">
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
-    <div class="shortcut-wrapper" v-show="!query">
+    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
       <scroll class="shortcut" ref="shortcut" :data="shortcut">
         <div>
           <div class="hot-key">
@@ -28,8 +28,8 @@
         </div>
       </scroll>
     </div>
-    <div class="search-result" v-show="query">
-      <suggest @listScroll="blurInput"  @select="saveSearch" :query="query"></suggest>
+    <div ref="searchResult" class="search-result" v-show="query">
+      <suggest ref="suggest" @listScroll="blurInput"  @select="saveSearch" :query="query"></suggest>
     </div>
     <confirm ref="confirm"
              text="是否清空所有搜索历史"
@@ -47,9 +47,11 @@ import Confirm from 'base/confirm/confirm'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { mapActions, mapGetters } from 'vuex'
+import { playlistMixin } from 'common/js/mixin'
 
 export default {
   name: 'Search',
+  mixins: [ playlistMixin ],
   data() {
     return {
       hotKey: [],
@@ -68,6 +70,14 @@ export default {
     this._getHotKey()
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.shortcutWrapper.style.bottom = bottom
+      this.$refs.shortcut.refresh()
+
+      this.$refs.searchResult.style.bottom = bottom
+      this.$refs.suggest.refresh()
+    },
     addQuery(query) {
       this.$refs.searchBox.setQuery(query)
     },
