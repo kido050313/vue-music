@@ -81,9 +81,9 @@ export default {
     addQuery(query) {
       this.$refs.searchBox.setQuery(query)
     },
-    saveSearch() {
-      this.saveSearchHistory(this.query)
-    },
+    // saveSearch() {
+    //   this.saveSearchHistory(this.query)
+    // },
     deleteOne(item) {
       this.deleteSearchHistory(item)
     },
