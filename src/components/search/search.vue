@@ -46,25 +46,21 @@ import Scroll from 'base/scroll/scroll'
 import Confirm from 'base/confirm/confirm'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
-import { mapActions, mapGetters } from 'vuex'
-import { playlistMixin } from 'common/js/mixin'
+import { mapActions } from 'vuex'
+import { playlistMixin, searchMixin } from 'common/js/mixin'
 
 export default {
   name: 'Search',
-  mixins: [ playlistMixin ],
+  mixins: [ playlistMixin, searchMixin ],
   data() {
     return {
-      hotKey: [],
-      query: ''
+      hotKey: []
     }
   },
   computed: {
     shortcut() {
       return this.hotKey.concat(this.searchHistory)
-    },
-    ...mapGetters([
-      'searchHistory'
-    ])
+    }
   },
   created() {
     this._getHotKey()
@@ -78,12 +74,6 @@ export default {
       this.$refs.searchResult.style.bottom = bottom
       this.$refs.suggest.refresh()
     },
-    addQuery(query) {
-      this.$refs.searchBox.setQuery(query)
-    },
-    // saveSearch() {
-    //   this.saveSearchHistory(this.query)
-    // },
     deleteOne(item) {
       this.deleteSearchHistory(item)
     },
@@ -97,19 +87,7 @@ export default {
         }
       })
     },
-    onQueryChange(query) {
-      this.query = query
-    },
-    blurInput() {
-      // 收起键盘,除掉焦点
-      this.$refs.searchBox.blur()
-    },
-    saveSearch() {
-      this.saveSearchHistory(this.query)
-    },
     ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory',
       'clearSearchHistory'
     ])
   },

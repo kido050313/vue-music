@@ -2,30 +2,6 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 
-// export const playlistMixin = {
-//   computed: {
-//     ...mapGetters([
-//       'playlist'
-//     ])
-//   },
-//   mounted() {
-//     this.handlePlaylist(this.playlist)
-//   },
-//   activated() {
-//     this.handlePlaylist(this.playlist)
-//   },
-//   watch: {
-//     playlist(newVal) {
-//       this.handlePlaylist(this.playlist)
-//     }
-//   },
-//   methods: {
-//     handlePlaylist() {
-//       throw new Error('component must implement handlePlaylist method')
-//     }
-//   }
-// }
-
 export const playlistMixin = {
   computed: {
     ...mapGetters([
@@ -67,12 +43,15 @@ export const playerMixin = {
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
+      // 不同的列表播放歌单不一样
       let list = null
+      // 洗牌打乱播放列表功能
       if (mode === playMode.random) {
         list = shuffle(this.sequenceList)
       } else {
         list = this.sequenceList
       }
+      // 切换模式的时候，当前currentSong不变，currentIndex 变化
       this.resetCurrentIndex(list)
       this.setPlaylist(list)
     },
@@ -131,6 +110,7 @@ export const searchMixin = {
       this.query = query
     },
     blurInput() {
+      // 收起键盘,除掉焦点
       this.$refs.searchBox.blur()
     },
     addQuery(query) {

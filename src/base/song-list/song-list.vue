@@ -54,7 +54,7 @@ export default {
 <style lang="stylus" scoped>
   @import '~common/stylus/variable'
   @import '~common/stylus/mixin'
-  .music-list
+  .song-list
     .item
       display flex
       align-items center
