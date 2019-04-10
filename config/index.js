@@ -20,7 +20,7 @@ module.exports = {
         secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 允许跨域
         pathRewrite: {
-          '^/api/getSongList': '/'
+          '^/api/getSongList': ''
         }
       },
       '/api/getDiscList': {

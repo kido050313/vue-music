@@ -71,7 +71,7 @@
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+              <i class="icon" :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -96,7 +96,11 @@
         </div>
       </div>
     </transition>
-    <playlist ref="playlist"></playlist>
+    <playlist ref="playlist"
+              @clearlist="clearSongs"
+              @deleteone="deleteOneSong"
+              @selectsong="selectOneSong">
+    </playlist>
     <audio ref="audio" :src="songUrl" @canplay="ready" @error="error"
            @timeupdate="updateTime" @ended="end"
     ></audio>
@@ -135,8 +139,11 @@ export default {
       currentLyric: null,
       currentLineNum: 0,
       currentShow: 'cd',
-      playingLyric: null
+      playingLyric: ''
     }
+  },
+  created() {
+    this.touch = {}
   },
   computed: {
     cdCls() {
@@ -159,9 +166,6 @@ export default {
       'playing',
       'currentIndex'
     ])
-  },
-  created() {
-    this.touch = {}
   },
   methods: {
     back() {
@@ -208,7 +212,7 @@ export default {
       this.$refs.cdWrapper.addEventListener('transitionend', done)
     },
     afterLeave() {
-      this.$refs.cdWrapper.style.animation = ''
+      this.$refs.cdWrapper.style.transition = ''
       this.$refs.cdWrapper.style[transform] = ''
     },
     togglePlaying() {
@@ -216,6 +220,8 @@ export default {
         return
       }
       this.setPlayingState(!this.playing)
+      const audio = this.$refs.audio
+      this.playing ? audio.play() : audio.pause()
       if (this.currentLyric) {
         this.currentLyric.togglePlay()
       }
@@ -226,7 +232,6 @@ export default {
       } else {
         this.next()
       }
-      this.next()
     },
     loop() {
       this.$refs.audio.currentTime = 0
@@ -304,7 +309,7 @@ export default {
     },
     onProgressBarChange(percent) {
       const currentTime = this.currentSong.duration * percent
-      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      this.$refs.audio.currentTime = currentTime
       if (!this.playing) {
         this.togglePlaying()
       }
@@ -365,6 +370,8 @@ export default {
     },
     middleTouchStart(e) {
       this.touch.initiated = true
+      // 用来判断是否是一次移动
+      this.touch.moved = false
       const touch = e.touches[0]
       this.touch.startX = touch.pageX
       this.touch.startY = touch.paheY
@@ -379,6 +386,9 @@ export default {
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
         return
       }
+      if (!this.touch.moved) {
+        this.touch.moved = true
+      }
       const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
       const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
       this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
@@ -388,6 +398,9 @@ export default {
       this.$refs.middleL.style[transitionDuration] = 0
     },
     middleTouchEnd() {
+      if (!this.touch.moved) {
+        return
+      }
       let offsetWidth
       let opacity
       if (this.currentShow === 'cd') {
@@ -414,12 +427,28 @@ export default {
       this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
       this.$refs.middleL.style.opacity = opacity
       this.$refs.middleL.style[transitionDuration] = `${time}ms`
+      this.touch.initiated = false
+    },
+    clearSongs() {
+      this.songUrl = ''
+      this.deleteSongList()
+    },
+    deleteOneSong(item) {
+      this.deleteSong(item)
+      if (!this.playlist.length) {
+        this.songUrl = ''
+      }
+    },
+    selectOneSong() {
+      this.$refs.audio.play()
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN'
     }),
     ...mapActions([
-      'savePlayHistory'
+      'savePlayHistory',
+      'deleteSongList',
+      'deleteSong'
     ])
   },
   watch: {
